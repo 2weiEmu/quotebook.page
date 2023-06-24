@@ -19,7 +19,7 @@ This website was written / is going to be writte in Golang - for the simple sake
 - [ ] Next and Previous Page Buttons at the Bottom of the Page
 
 ## Feature List
-- [ ] A Small light-weight database, perhaps H2 (but I don't know - maybe go works easiest with MySQL).
+- [X] A Small light-weight database, perhaps H2 (but I don't know - maybe go works easiest with MySQL). ! (we using SQLite3)
   - [ ] Good Indexing for decent performance
 - [ ] The ability to POST to /quoteadd/ to add quotes
 - [ ] The ability to interop with a discord webhook (should be included in above?)

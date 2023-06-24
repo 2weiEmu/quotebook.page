@@ -25,13 +25,13 @@
 
         </div>
 
-        <!--
+        {{ range .Quotes }}
         <div class="quote-wrapper">
-            <p class="quote-text">Here is the body of the quote.</p>
-            <p class="quote-date">lolcat/lolcat/2023</p>
-            <p class="quote-author">Sayer> Probably Sheepfucker</p>
+            <p class="quote-text"> {{ .Quote }} </p>
+            <p class="quote-date"> {{ .Date }} </p>
+            <p class="quote-author">Sayer> {{ .Sayer }} </p>
         </div>
-        -->
+        {{ end }}
     </body>
 
 </html>
