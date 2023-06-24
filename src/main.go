@@ -12,6 +12,8 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
+// TODO: @robert - function that returns quotes based on Query
+
 // Creating the Main Database for Global Access
 // TODO: @robert - this is perhaps not the best way to do this -> but it'll be fine
 var db *sql.DB;
@@ -67,26 +69,37 @@ func getQuotePageFromDB(pageNumber int) ([]QuoteQuery) {
 
 func updateHandling(w http.ResponseWriter, req *http.Request) {
 
-    if req.Method == http.MethodPost {
-        fmt.Println("Received update...")
+    if match, _ := regexp.MatchString(`^/updates/addQuote$`, req.URL.Path); match {
 
-        quote := req.FormValue("Quote")
-        date := req.FormValue("Date")
-        sayer := req.FormValue("Sayer")
+        if req.Method == http.MethodPost {
+            fmt.Println("Received update...")
 
-        db.Exec("INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)", quote, date, sayer)
+            quote := req.FormValue("Quote")
+            date := req.FormValue("Date")
+            sayer := req.FormValue("Sayer")
 
-        // Redirect to prevent form resubmission
-        http.Redirect(w, req, "/", http.StatusSeeOther)
+            db.Exec("INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)", quote, date, sayer)
+
+            // Redirect to prevent form resubmission
+        }
+
+    } else if match, _ := regexp.MatchString(`^/updates/deleteQuote$`, req.URL.Path); match {
+
+
+    } else if match, _ := regexp.MatchString(`^/updates/updateQuote$`, req.URL.Path); match {
 
     }
+
+
+    http.Redirect(w, req, "/", http.StatusSeeOther)
+
 }
 
 func routeHandler(w http.ResponseWriter, req *http.Request) {
 
     pathRoute := req.URL.Path 
 
-    if match, _ := regexp.MatchString(`^/(\?page=[0-9]+)?$`, pathRoute); match {
+    if match, _ := regexp.MatchString(`^\/(\?((page=[0-9]+)|(search=[\w]+)))?$`, pathRoute); match {
         indexPage(w, req)
 
     } else if match, _ := regexp.MatchString(`^/css/`, pathRoute); match {
@@ -107,31 +120,58 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
     // Getting the query out of the Request
     queryParams := req.URL.Query()
     pageList := queryParams["page"]
+    searchText := queryParams["search"]
+    //searchAuthor := queryParams["author"] // TODO: add to regex
+    //searchDate := queryParams["date"] // TODO: add to regex
 
-    var pageQuery string;
+    if len(searchText) != 0 {
 
-    if len(pageList) > 0 {
-        pageQuery = pageList[0]
-    }
-    
-    // Getting the Page number that was queried for
-    pageNumber, err := strconv.Atoi(pageQuery) // TODO: @robert: actually handle this error please...
-    fmt.Println(pageNumber)
+        searchText := searchText[0]
 
-    // Getting relevant rows out of the DB
-    quotes := getQuotePageFromDB(pageNumber)
+        rows, err := db.Query("SELECT id, quote, date, sayer FROM quotes as q WHERE q.quote LIKE '%?%'", searchText)
 
-    data := Data {
-        Quotes: quotes,
-    }
+        var returnQuotes []QuoteQuery;
 
-    // Get index.html and render to client (reponseWriter)
-    indexPage, _ := template.ParseFiles("src/static/templates/index.html")
+        if err != nil { fmt.Println("Query failed...", err) }
+        defer rows.Close()
 
-    err = indexPage.Execute(w, data)
+        for rows.Next() {
 
-    if err != nil {
-        fmt.Fprintf(w, "Something went wrong...", err)
+            var quote QuoteQuery;
+
+            if err := rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer); err != nil {
+                fmt.Println("Failed to format a result...", err)
+            }
+            quote.Date = strings.TrimSuffix(quote.Date, "T00:00:00Z")
+            returnQuotes = append(returnQuotes, quote)
+        }
+        
+    } else {
+        var pageQuery string;
+
+        if len(pageList) > 0 {
+            pageQuery = pageList[0]
+        }
+        
+        // Getting the Page number that was queried for
+        pageNumber, err := strconv.Atoi(pageQuery) // TODO: @robert: actually handle this error please...
+        fmt.Println(pageNumber)
+
+        // Getting relevant rows out of the DB
+        quotes := getQuotePageFromDB(pageNumber)
+
+        data := Data {
+            Quotes: quotes,
+        }
+
+        // Get index.html and render to client (reponseWriter)
+        indexPage, _ := template.ParseFiles("src/static/templates/index.html")
+
+        err = indexPage.Execute(w, data)
+
+        if err != nil {
+            fmt.Fprintf(w, "Something went wrong...", err)
+        }
     }
 }
 
@@ -140,6 +180,7 @@ func main() {
     var connectionError error;
     db, connectionError = sql.Open("sqlite3", "file:src/DATABASE?cache=shared")
 
+    // TODO: proper error checking here, not on one line
     if e := db.Ping(); e != nil || connectionError != nil {
         fmt.Println("Failed to Start the DB")
     } else {
@@ -151,3 +192,4 @@ func main() {
 
     http.ListenAndServe(":8000", nil)
 }
+
