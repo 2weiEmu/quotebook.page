@@ -4,4 +4,32 @@ This website is going to be an automated quotebook of some guys from Aerospace E
 
 This website was written / is going to be writte in Golang - for the simple sake of spiting all the people using Javascript - also it performs better, and if these people ever decide that 10GB of quote data is to their pleasing well - well in that case that is honestly on the Database but yea...
 
-Maybe in the future some random guy with too much time is going to add Discord integration, also for the existing quotebook channel that exists there. For now, enjoy searching for quotes, and adding new ones. Is it simple yes? Are the people that made this website / writing the quotes on it simple? Yes.
+## Functional Requirements List
+- [ ] Page-based website, that loads 15 quotes at the same time, chronological order
+- [ ] Easy Search interface that allows searching for the following parts of a quote:
+  - [ ] Author
+  - [ ] Contained Text
+  - [ ] Date (day/month/year combo)
+    - [ ] Year only
+    - [ ] Year Month Combination
+  - [ ] Date-Range 
+- [ ] Add-quote Button, that allows a user to enter a new quote
+  - [ ] With password authentication 
+- [ ] Dark-mode detection, changing theme
+- [ ] Next and Previous Page Buttons at the Bottom of the Page
+
+## Feature List
+- [ ] A Small light-weight database, perhaps H2 (but I don't know - maybe go works easiest with MySQL).
+  - [ ] Good Indexing for decent performance
+- [ ] The ability to POST to /quoteadd/ to add quotes
+- [ ] The ability to interop with a discord webhook (should be included in above?)
+- [ ] Quick-page based loading out of the DB
+- [ ] An easy JSON schema to allow easy interaction with the website
+
+# Technical Information
+
+## Database Schema
+```sql
+TODO
+```
+
