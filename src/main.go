@@ -1,16 +1,16 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
-    "html/template"
-    "strconv"
-    "github.com/mattn/go-sqlite3"
-    "database/sql"
-    "regexp"
+	"database/sql"
+	"fmt"
+	"html/template"
+	"net/http"
+	"regexp"
+	"strconv"
+	"strings"
+
+	"github.com/mattn/go-sqlite3"
 )
-
-
 
 // Creating the Main Database for Global Access
 // TODO: @robert - this is perhaps not the best way to do this -> but it'll be fine
@@ -58,6 +58,7 @@ func getQuotePageFromDB(pageNumber int) ([]QuoteQuery) {
         if err := rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer); err != nil {
             fmt.Println("Failed to format a result...", err)
         }
+        quote.Date = strings.TrimSuffix(quote.Date, "T00:00:00Z")
         returnQuotes = append(returnQuotes, quote)
     }
 
@@ -66,8 +67,19 @@ func getQuotePageFromDB(pageNumber int) ([]QuoteQuery) {
 
 func updateHandling(w http.ResponseWriter, req *http.Request) {
 
+    if req.Method == http.MethodPost {
+        fmt.Println("Received update...")
 
-    //r.FormValue
+        quote := req.FormValue("Quote")
+        date := req.FormValue("Date")
+        sayer := req.FormValue("Sayer")
+
+        db.Exec("INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)", quote, date, sayer)
+
+        // Redirect to prevent form resubmission
+        http.Redirect(w, req, "/", http.StatusSeeOther)
+
+    }
 }
 
 func routeHandler(w http.ResponseWriter, req *http.Request) {
@@ -91,19 +103,6 @@ func routeHandler(w http.ResponseWriter, req *http.Request) {
 
 func indexPage(w http.ResponseWriter, req *http.Request) {
     
-    if req.Method == http.MethodPost {
-        fmt.Println("Received update...")
-
-        fmt.Println(req.FormValue("Quote"))
-        quote := req.FormValue("Quote")
-        fmt.Println(req.FormValue("Date"))
-        date := req.FormValue("Date")
-        fmt.Println(req.FormValue("Sayer"))
-        sayer := req.FormValue("Sayer")
-
-        db.Exec("INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)", quote, date, sayer)
-
-    }
 
     // Getting the query out of the Request
     queryParams := req.URL.Query()
