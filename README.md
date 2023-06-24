@@ -29,6 +29,11 @@ This website was written / is going to be writte in Golang - for the simple sake
 
 # Technical Information
 
+## Running
+
+You are going to have to go to the primary directory, and run the following command: `go mod init src/`. In the `src` directory you are also going to have to create a file called `DATABASE` (yes I know, great naming), in which you should save the schema specified in the below section. Then you can once again go to the primary directory, and run `go run src/main.go`. 
+Some errors may be thrown, these will tell you to install certain git packages, using various `go mod` commands.
+
 ## Database Schema
 ```sql
 TABLE quotes (
