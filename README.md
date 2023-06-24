@@ -30,6 +30,11 @@ This website was written / is going to be writte in Golang - for the simple sake
 
 ## Database Schema
 ```sql
-TODO
+TABLE quotes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  quote VARCHAR(512) NOT NULL,
+  date DATE NOT NULL,
+  sayer VARCHAR(50) NOT NULL
+);
 ```
 
