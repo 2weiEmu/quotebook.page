@@ -16,6 +16,7 @@ This website was written / is going to be writte in Golang - for the simple sake
 - [ ] Add-quote Button, that allows a user to enter a new quote
   - [ ] With password authentication 
 - [ ] Dark-mode detection, changing theme
+- [ ] Next and Previous Page Buttons at the Bottom of the Page
 
 ## Feature List
 - [ ] A Small light-weight database, perhaps H2 (but I don't know - maybe go works easiest with MySQL).
@@ -24,3 +25,11 @@ This website was written / is going to be writte in Golang - for the simple sake
 - [ ] The ability to interop with a discord webhook (should be included in above?)
 - [ ] Quick-page based loading out of the DB
 - [ ] An easy JSON schema to allow easy interaction with the website
+
+# Technical Information
+
+## Database Schema
+```sql
+TODO
+```
+
