@@ -84,24 +84,19 @@ func getQuotesUsingQuery(queryString string) ([]QuoteQuery, error) {
 
 func updateHandling(w http.ResponseWriter, req *http.Request) {
 
-    if match, _ := regexp.MatchString(`^/updates/addQuote$`, req.URL.Path); match {
 
-        if req.Method == http.MethodPost {
-            fmt.Println("Received update...")
+    if req.Method == http.MethodPost {
+        fmt.Println("Received update...")
 
-            quote := req.FormValue("Quote")
-            date := req.FormValue("Date")
-            sayer := req.FormValue("Sayer")
+        quote := req.FormValue("Quote")
+        date := req.FormValue("Date")
+        sayer := req.FormValue("Sayer")
 
-            db.Exec("INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)", quote, date, sayer)
+        db.Exec("INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)", quote, date, sayer)
 
-            // Redirect to prevent form resubmission
-        }
+        // Redirect to prevent form resubmission
 
-    } else if match, _ := regexp.MatchString(`^/updates/deleteQuote$`, req.URL.Path); match {
-
-
-    } else if match, _ := regexp.MatchString(`^/updates/updateQuote$`, req.URL.Path); match {
+    } else if req.Method == http.MethodDelete {
 
     }
 
@@ -175,7 +170,7 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
     err := indexPage.Execute(w, data)
 
     if err != nil {
-        fmt.Fprintf(w, "Something went wrong...", err)
+        fmt.Fprintf(w, "Something went wrong: %s", err)
     }
 }
 
