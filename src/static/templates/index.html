@@ -43,6 +43,15 @@
             <p class="quote-author">Sayer> {{ .Sayer }} </p>
         </div>
         {{ end }}
+
+        <div class="pagination-wrapper">
+            {{ range .Pagination }}
+                <form action="/" method="GET">
+                    <input style="display: none" name="page" value="{{ .Page }}">
+                    <button type="submit">{{ .Page }}</button>
+                </form>
+            {{ end }}
+        </div>
     </body>
 
 </html>

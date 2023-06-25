@@ -32,8 +32,13 @@ type QuoteQuery struct {
     Sayer string
 }
 
+type Pages struct {
+    Page int
+}
+
 type Data struct {
     Quotes []QuoteQuery
+    Pagination []Pages
 }
 
 // TODO: @robert one day prepared statements pls
@@ -136,10 +141,15 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
     //searchAuthor := queryParams["author"] // TODO: add to regex
     //searchDate := queryParams["date"] // TODO: add to regex
 
+    pageNumber := 0
+
     if len(searchText) != 0 {
 
         searchText := searchText[0]
 
+        // TODO: I have to make it so that searches too get split into pages of 15
+        // otherwise you could ahve like - you know infinitely long single pages- a pain
+        // meaning searches must also implicity include pages from now on
         queryStatement := fmt.Sprintf(`SELECT * FROM quotes as q WHERE q.quote LIKE '%%%s%%'`, searchText)
         quotes, _ = getQuotesUsingQuery(queryStatement)
         
@@ -151,7 +161,7 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
         }
         
         // Getting the Page number that was queried for
-        pageNumber, _ := strconv.Atoi(pageQuery) // TODO: @robert: actually handle this error please...
+        pageNumber, _ = strconv.Atoi(pageQuery) // TODO: @robert: actually handle this error please...
         fmt.Println(pageNumber)
 
         // Getting relevant rows out of the DB
@@ -161,8 +171,17 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
         // Get index.html and render to client (reponseWriter)
     }
 
+    var pagesAround []Pages;
+
+    for i := pageNumber - 2; i < pageNumber + 3; i++ {
+        if i >= 0 {
+            pagesAround = append(pagesAround, Pages{i});
+        }
+    }
+
     data := Data {
         Quotes: quotes,
+        Pagination: pagesAround,
     }
 
     indexPage, _ := template.ParseFiles("src/static/templates/index.html")
