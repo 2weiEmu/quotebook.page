@@ -1,6 +1,7 @@
 :root {
     --green: #88c070;
     --background: #303030;
+    --dark-red: #490F0F;
 }
 
 * {
@@ -32,6 +33,11 @@ form * {
     background: var(--background);
     color: var(--green);
     padding: 5px;
+    border: 2px solid grey;
+}
+
+input:invalid {
+    border: 2px solid var(--dark-red);
 }
 
 

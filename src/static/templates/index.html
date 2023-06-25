@@ -26,9 +26,9 @@
             <br><br>
             <p>Add Quote<p>
             <form action="/updates/" method="POST">
-                <input type="text" name="Quote" placeholder="Quote here...">
-                <input type="date" name="Date">
-                <input type="text" name="Sayer" placeholder="Sayer...">
+                <input required maxlength=512 type="text" name="Quote" placeholder="Quote here...">
+                <input required type="date" name="Date">
+                <input required maxlength=50 type="text" name="Sayer" placeholder="Sayer...">
                 <button type="submit">
                     Add!
                 </button>
