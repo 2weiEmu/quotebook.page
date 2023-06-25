@@ -1,15 +1,17 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"html/template"
-	"net/http"
-	"regexp"
-	"strconv"
-	"strings"
+    // Go Library Packages
+    "database/sql"
+    "fmt"
+    "html/template"
+    "net/http"
+    "regexp"
+    "strconv"
+    "strings"
 
-	"github.com/mattn/go-sqlite3"
+    // External Packages
+    "github.com/mattn/go-sqlite3"
 )
 
 // TODO: @robert - function that returns quotes based on Query
@@ -20,6 +22,9 @@ var db *sql.DB;
 var sqlite3Conn sqlite3.SQLiteConn;
 
 
+/*
+ * Useful Structs
+ */
 type QuoteQuery struct {
     ID int64
     Quote string 
@@ -45,26 +50,36 @@ func getQueryForPage(pageNumber int) string {
     return finalStatement
 }
 
-func getQuotePageFromDB(pageNumber int) ([]QuoteQuery) {
-    rows, err := db.Query(getQueryForPage(pageNumber))
+
+// TODO: add returning the error
+func getQuotesUsingQuery(queryString string) ([]QuoteQuery, error) {
+
+    rows, err := db.Query(queryString)
+    defer rows.Close()
+
+    if err != nil {
+        fmt.Println("The queryString:", queryString, "has failed with error:", err);
+    }
 
     var returnQuotes []QuoteQuery;
-
-    if err != nil { fmt.Println("Query failed...", err) }
-    defer rows.Close()
 
     for rows.Next() {
 
         var quote QuoteQuery;
 
-        if err := rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer); err != nil {
-            fmt.Println("Failed to format a result...", err)
+        err := rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer)
+
+        if err != nil {
+            fmt.Println("Failed to retrieve row:", rows, "With the error:", err)
         }
+
         quote.Date = strings.TrimSuffix(quote.Date, "T00:00:00Z")
         returnQuotes = append(returnQuotes, quote)
+
     }
 
-    return returnQuotes
+    return returnQuotes, nil
+
 }
 
 func updateHandling(w http.ResponseWriter, req *http.Request) {
@@ -117,6 +132,8 @@ func routeHandler(w http.ResponseWriter, req *http.Request) {
 func indexPage(w http.ResponseWriter, req *http.Request) {
     
 
+    var quotes []QuoteQuery;
+
     // Getting the query out of the Request
     queryParams := req.URL.Query()
     pageList := queryParams["page"]
@@ -128,23 +145,8 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
 
         searchText := searchText[0]
 
-        rows, err := db.Query("SELECT id, quote, date, sayer FROM quotes as q WHERE q.quote LIKE '%?%'", searchText)
-
-        var returnQuotes []QuoteQuery;
-
-        if err != nil { fmt.Println("Query failed...", err) }
-        defer rows.Close()
-
-        for rows.Next() {
-
-            var quote QuoteQuery;
-
-            if err := rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer); err != nil {
-                fmt.Println("Failed to format a result...", err)
-            }
-            quote.Date = strings.TrimSuffix(quote.Date, "T00:00:00Z")
-            returnQuotes = append(returnQuotes, quote)
-        }
+        queryStatement := fmt.Sprintf(`SELECT * FROM quotes as q WHERE q.quote LIKE '%%%s%%'`, searchText)
+        quotes, _ = getQuotesUsingQuery(queryStatement)
         
     } else {
         var pageQuery string;
@@ -154,27 +156,33 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
         }
         
         // Getting the Page number that was queried for
-        pageNumber, err := strconv.Atoi(pageQuery) // TODO: @robert: actually handle this error please...
+        pageNumber, _ := strconv.Atoi(pageQuery) // TODO: @robert: actually handle this error please...
         fmt.Println(pageNumber)
 
         // Getting relevant rows out of the DB
-        quotes := getQuotePageFromDB(pageNumber)
+        quotes, _ = getQuotesUsingQuery(getQueryForPage(pageNumber))
 
-        data := Data {
-            Quotes: quotes,
-        }
 
         // Get index.html and render to client (reponseWriter)
-        indexPage, _ := template.ParseFiles("src/static/templates/index.html")
+    }
 
-        err = indexPage.Execute(w, data)
+    data := Data {
+        Quotes: quotes,
+    }
 
-        if err != nil {
-            fmt.Fprintf(w, "Something went wrong...", err)
-        }
+    indexPage, _ := template.ParseFiles("src/static/templates/index.html")
+
+    err := indexPage.Execute(w, data)
+
+    if err != nil {
+        fmt.Fprintf(w, "Something went wrong...", err)
     }
 }
 
+
+/*
+ * Main
+ */
 func main() {
 
     var connectionError error;
