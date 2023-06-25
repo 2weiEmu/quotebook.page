@@ -17,7 +17,7 @@ This website was written / is going to be writte in Golang - for the simple sake
   - [ ] With password authentication 
 - [ ] Dark-mode detection, changing theme
 - [X] ~~Next and Previous Page Buttons at the Bottom of the Page~~ (Changed to Pagination)
-- [ ] Easy input verification, quotes shouldn't be longer than 512 chars, and people no longer than 50.
+- [X] Easy input verification, quotes shouldn't be longer than 512 chars, and people no longer than 50.
 
 ## Feature List
 - [X] A Small light-weight database, now SQLite3
