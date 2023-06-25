@@ -58,7 +58,7 @@ Note the first startup may take a second.
 
 ## Database Schema
 ```sql
-TABLE quotes (
+CREATE TABLE quotes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   quote VARCHAR(512) NOT NULL,
   date DATE NOT NULL,
