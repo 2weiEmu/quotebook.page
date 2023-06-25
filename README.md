@@ -16,7 +16,7 @@ This website was written / is going to be writte in Golang - for the simple sake
 - [X] Add-quote Button, that allows a user to enter a new quote
   - [ ] With password authentication 
 - [ ] Dark-mode detection, changing theme
-- [ ] Next and Previous Page Buttons at the Bottom of the Page
+- [X] ~~Next and Previous Page Buttons at the Bottom of the Page~~ (Changed to Pagination)
 - [ ] Easy input verification, quotes shouldn't be longer than 512 chars, and people no longer than 50.
 
 ## Feature List
