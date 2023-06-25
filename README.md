@@ -38,8 +38,23 @@ This website was written / is going to be writte in Golang - for the simple sake
 
 ### Installation & Running
 
-You are going to have to go to the primary directory, and run the following command: `go mod init src/`. In the `src` directory you are also going to have to create a file called `DATABASE` (yes I know, great naming), in which you should save the schema specified in the below section. Then you can once again go to the primary directory, and run `go run src/main.go`. 
-Some errors may be thrown, these will tell you to install certain git packages, using various `go mod` commands.
+Download the Git repo in whichever way you please.
+Enter the first folder and run
+```sh 
+go mod init src
+```
+This is done to setup the Go environment. Then enter the main `src` folder, and create a file named `DATABASE`. This file should contain the database schema specified below (created using SQLite3).
+
+Return to the root folder, and run:
+```sh 
+go get github.com/mattn/go-sqlite3
+```
+
+Now you can run the project from the root folder using
+```sh 
+go run src/main.go
+```
+Note the first startup may take a second.
 
 ## Database Schema
 ```sql
