@@ -36,6 +36,8 @@ This website was written / is going to be writte in Golang - for the simple sake
 - Go
 - SQLite3
 
+> Note that making this cooperate on windows maybe quite difficult / impossible. I did not attempt this yet. If you can make it work, feel free to submit a pull request with the required instructions.
+
 ### Installation & Running
 
 Download the Git repo in whichever way you please.
