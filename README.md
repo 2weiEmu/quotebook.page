@@ -45,6 +45,32 @@ go mod init src
 ```
 This is done to setup the Go environment. Then enter the main `src` folder, and create a file named `DATABASE`. This file should contain the database schema specified below (created using SQLite3).
 
+#### Creating the SQL Schema
+
+For this you require an installation of SQLite3 (`sqlite3`). Make sure that the `DATABASE` file is empty.
+
+First enter sqlite3 with the command
+```sh
+sqlite3
+```
+
+at this point you should be in the sqlite3 environment.
+Run the following commands to create the schema below:
+```
+.open DATABASE
+
+CREATE TABLE quotes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  quote VARCHAR(512) NOT NULL,
+  date DATE NOT NULL,
+  sayer VARCHAR(50) NOT NULL
+);
+```
+
+Then quit out of sqlite3 by pressing `<C-c>` (Control-C) twice.
+
+### Continue Installation
+
 Return to the root folder, and run:
 ```sh 
 go get github.com/mattn/go-sqlite3
