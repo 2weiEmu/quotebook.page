@@ -84,6 +84,8 @@ go run src/main.go
 ```
 Note the first startup may take a second.
 
+After that the site is going to be hosted on `localhost:8000` (by default at least)
+
 ## Database Schema
 ```sql
 CREATE TABLE quotes (
