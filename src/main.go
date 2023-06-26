@@ -1,17 +1,18 @@
 package main
 
 import (
-    // Go Library Packages
-    "database/sql"
-    "fmt"
-    "html/template"
-    "net/http"
-    "regexp"
-    "strconv"
-    "strings"
+	// Go Library Packages
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"html/template"
+	"net/http"
+	"regexp"
+	"strconv"
+	"strings"
 
-    // External Packages
-    "github.com/mattn/go-sqlite3"
+	// External Packages
+	"github.com/mattn/go-sqlite3"
 )
 
 // Creating the Main Database for Global Access
@@ -41,6 +42,27 @@ type Data struct {
     Pagination []Pages
 }
 
+type APIPost struct {
+    Quote string `json:"Quote"`
+    Date string `json:"Date"`
+    Sayer string `json:"Sayer"`
+}
+
+type APIDelete struct {
+    ID int `json:"ID"`
+    Quote string `json:"Quote"`
+    Date string `json:"Date"`
+    Sayer string `json:"Sayer"`
+
+}
+
+type APIPut struct {
+    Quote string `json:"Quote"`
+    Date string `json:"Date"`
+    Sayer string `json:"Sayer"`
+    ChangedAttr string `json:"ChangedAttr"`
+    NewValue string `json:"NewValue"`
+}
 
 func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, error) {
 
@@ -76,6 +98,7 @@ func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, error
 }
 
 
+// Endpoint for sneding Form values
 func updateHandling(w http.ResponseWriter, req *http.Request) {
 
     if req.Method == http.MethodPost {
@@ -89,11 +112,69 @@ func updateHandling(w http.ResponseWriter, req *http.Request) {
 
         // Redirect to prevent form resubmission
 
-    } else if req.Method == http.MethodDelete {
-        fmt.Println("Received delete...")
-    }
+    } 
 
     http.Redirect(w, req, "/", http.StatusSeeOther)
+}
+
+
+// Endpoint for sending raw JSON
+func apiHandling(w http.ResponseWriter, req *http.Request) {
+
+    var decoder *json.Decoder;
+
+    if req.Body != nil {
+        decoder = json.NewDecoder(req.Body)
+    }
+
+    if req.Method == http.MethodPost {
+
+        var post APIPost
+        err := decoder.Decode(&post)
+
+        if err != nil {
+            fmt.Println("Post request failed. Error:", err)
+            fmt.Fprintf(w, "%d", http.StatusInternalServerError)
+        }
+
+        fmt.Println(post);
+
+        // WARNING: User input is not validated yet!
+        
+        // TODO: jaja prepared statements and all that
+        db.Exec(`INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)`, post.Quote, post.Date, post.Sayer)
+
+        // TODO: return the id to the post making the request -> they might need it
+    } else if req.Method == http.MethodDelete {
+
+        // TODO: delete does not really work - like - we have to figure out a bit how to do this... maybe we just don't...
+
+        var apiDelete APIDelete
+
+        err := decoder.Decode(&apiDelete)
+
+        if err != nil {
+            fmt.Println("Delete request failed. Error:", err)
+            fmt.Fprintf(w, "%d", http.StatusInternalServerError)
+        }
+
+        fmt.Println(apiDelete)
+
+    } else if req.Method == http.MethodPut {
+
+        var apiPut APIPut
+
+        err := decoder.Decode(&apiPut)
+
+        if err != nil {
+            fmt.Println("Put request failed. Error:", err)
+            fmt.Fprintf(w, "%d", http.StatusInternalServerError)
+        }
+
+        // TODO: changing attribute listed
+
+
+    }
 }
 
 
@@ -113,6 +194,8 @@ func routeHandler(w http.ResponseWriter, req *http.Request) {
     } else if match, _ := regexp.MatchString(`^/updates/`, pathRoute); match {
         updateHandling(w, req)
 
+    } else if match, _ := regexp.MatchString(`^/api/`, pathRoute); match {
+        apiHandling(w, req)
     }
 }
 
