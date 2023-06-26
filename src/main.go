@@ -18,8 +18,9 @@ import (
 // Creating the Main Database for Global Access
 // TODO: @robert - this is perhaps not the best way to do this -> but it'll be fine
 var db *sql.DB;
-var sqlite3Conn sqlite3.SQLiteConn;
+var sqlite3Conn sqlite3.SQLiteConn
 var pageSearchStatement *sql.Stmt
+var err error
 
 /*
  * Useful Structs
@@ -83,7 +84,7 @@ func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, error
     for rows.Next() {
 
         var quote QuoteQuery;
-        err := rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer)
+        err = rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer)
 
         if err != nil {
             fmt.Println("Failed to retrieve row:", rows, "With the error:", err)
@@ -260,23 +261,21 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
  */
 func main() {
 
-    var connectionError error;
-    db, connectionError = sql.Open("sqlite3", "file:src/DATABASE?cache=shared")
+    db, err = sql.Open("sqlite3", "file:src/DATABASE?cache=shared")
 
     defer db.Close()
 
-    if connectionError != nil {
-        fmt.Println("Failed to connect to the database (src/DATABASE) with error:", connectionError)
+    if err != nil {
+        fmt.Println("Failed to connect to the database (src/DATABASE) with error:", err)
     }
 
-    if e := db.Ping(); e != nil {
-        fmt.Println("DB Not Connected. Ping failed with error:", e)
+    if err = db.Ping(); err != nil {
+        fmt.Println("DB Not Connected. Ping failed with error:", err)
     } else {
         fmt.Println("Connected to SQLite3 Database (src/DATABASE file)")
     }
 
     // Preparing Database Statement
-    var err error
     pageSearchStatement, err = db.Prepare(`SELECT * FROM quotes as q WHERE q.quote LIKE ? ORDER BY date DESC LIMIT ?, ?`)
     defer pageSearchStatement.Close()
 
