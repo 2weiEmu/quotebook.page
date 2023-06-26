@@ -15,79 +15,63 @@
     src: url(fonts/Seagram\ tfb.ttf);
 }
 
-
-
 body {
-    width: 100vw;
-    max-width: 100vw;
+    width: 100%;
     min-height: 100vh;
 
-    background: var(--background);
-
-    display: flex;  
-    flex-direction: column;
+    background-color: var(--background);
     color: var(--green);
+    font-family: seagram;
+    display: flex;
 }
 
-form * {
-    font-family: seagram;
-    background: var(--background);
+input, button {
+    background-color: var(--background);
     color: var(--green);
-    padding: 5px;
+    font-family: seagram;
     border: 2px solid grey;
+    padding: 5px;
 }
 
 input:invalid {
-    border: 2px solid var(--dark-red);
+    border: 2px solid var(--dark-red)
 }
 
-
-.quote-wrapper {
-
-    margin: 10px auto 10px auto;
-    
-    min-width: 480px;
-    width: 50%;
-    font-size: 1.25rem;
-
-    font-family: seagram;
-
+input:empty {
+    border: 2px solid grey;
 }
 
 .sidebar-wrapper {
-    padding: 10px;
-    position: fixed;
-
-    top: 100px;
-    left: 50px;
     width: 15%;
-    background: #101010;
+    padding: 30px;
+    position: sticky;
+    top: 0;
+}
 
-    font-family: seagram;
-    font-size: 1.5rem;
+.content-wrapper {
+    width: 85%;
+    padding: 30px 0 30px 0;
+}
+
+.quote-wrapper {
+    padding: 10px 0 10px 0;
 }
 
 .quote-text {
-    padding-left: 30px;
     border-left: 10px solid grey;
-    margin: 5px 0 11px 0;
-    overflow: hidden;
-    max-width: 100%;
+    padding-left: 10px;
 }
 
 .pagination-wrapper {
     display: flex;
-    margin: 10px auto 10px auto;
-    
-    width: 20%;
+    width: 30%;
     justify-content: space-evenly;
 }
 
-.pagination-wrapper * {
-    width: 20%;
+.pagination-wrapper form {
+    width: 100%;
 }
 
-.pagination-wrapper * * {
+.pagination-button {
     width: 50%;
 }
-

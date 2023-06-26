@@ -35,21 +35,23 @@
 
         </div>
 
-        {{ range .Quotes }}
-        <div class="quote-wrapper">
-            <p class="quote-text"> {{ .Quote }} </p>
-            <p class="quote-date"> {{ .Date }} </p>
-            <p class="quote-author">Sayer> {{ .Sayer }} </p>
-        </div>
-        {{ end }}
-
-        <div class="pagination-wrapper">
-            {{ range .Pagination }}
-                <form action="/" method="GET">
-                    <input style="display: none" name="page" value="{{ .Page }}">
-                    <button type="submit">{{ .Page }}</button>
-                </form>
+        <div class="content-wrapper">
+            {{ range .Quotes }}
+            <div class="quote-wrapper">
+                <p class="quote-text"> {{ .Quote }} </p>
+                <p class="quote-date"> {{ .Date }} </p>
+                <p class="quote-author">Sayer> {{ .Sayer }} </p>
+            </div>
             {{ end }}
+
+            <div class="pagination-wrapper">
+                {{ range .Pagination }}
+                    <form action="/" method="GET">
+                        <input style="display: none" name="page" value="{{ .Page }}">
+                        <button class="pagination-button" type="submit">{{ .Page }}</button>
+                    </form>
+                {{ end }}
+            </div>
         </div>
     </body>
 
