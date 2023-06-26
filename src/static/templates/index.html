@@ -16,7 +16,7 @@
             <p>Search</p>
 
             <form action="/" method="GET">
-                <input type="text" name="search" placeholder="Search here mf...">
+                <input type="text" name="search" placeholder="Currently: {{ .TotalSearch }}">
                 <button type="submit">
                     Go!
                 </button>
@@ -48,6 +48,7 @@
                 {{ range .Pagination }}
                     <form action="/" method="GET">
                         <input style="display: none" name="page" value="{{ .Page }}">
+                        <input style="display: none" name="search" value="{{ .Search }}">
                         <button class="pagination-button" type="submit">{{ .Page }}</button>
                     </form>
                 {{ end }}

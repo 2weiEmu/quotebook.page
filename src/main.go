@@ -32,32 +32,18 @@ type QuoteQuery struct {
 
 type Pages struct {
     Page int
+    Search string
 }
 
 type Data struct {
+    TotalSearch string
     Quotes []QuoteQuery
     Pagination []Pages
 }
 
-// TODO: @robert one day prepared statements pls
-func getQueryForPage(pageNumber int) string {
-    sqlStmt := `SELECT id, quote, date, sayer FROM quotes as q
-    ORDER BY date DESC
-    LIMIT `
 
-    startOffset := pageNumber * 15
-    endOffset := startOffset + 15
-
-    finalStatement := fmt.Sprintf("%s%d,%d", sqlStmt, startOffset, endOffset)
-
-    return finalStatement
-}
-
-
-// TODO: add returning the error
 func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, error) {
 
-    // pageSearchStatement.Query takes "searchString" "startNumber" "endNumber"
     startNumber := pageNumber * 15;
     endNumber := startNumber + 15;
     searchString = "%" + searchString + "%"
@@ -75,26 +61,22 @@ func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, error
     for rows.Next() {
 
         var quote QuoteQuery;
-
         err := rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer)
 
         if err != nil {
             fmt.Println("Failed to retrieve row:", rows, "With the error:", err)
+            return nil, err
         }
 
         quote.Date = strings.TrimSuffix(quote.Date, "T00:00:00Z")
         returnQuotes = append(returnQuotes, quote)
 
     }
-
-    fmt.Println("Returned Quotes:", returnQuotes)
-
     return returnQuotes, nil
-
 }
 
-func updateHandling(w http.ResponseWriter, req *http.Request) {
 
+func updateHandling(w http.ResponseWriter, req *http.Request) {
 
     if req.Method == http.MethodPost {
         fmt.Println("Received update...")
@@ -108,13 +90,12 @@ func updateHandling(w http.ResponseWriter, req *http.Request) {
         // Redirect to prevent form resubmission
 
     } else if req.Method == http.MethodDelete {
-
+        fmt.Println("Received delete...")
     }
 
-
     http.Redirect(w, req, "/", http.StatusSeeOther)
-
 }
+
 
 func routeHandler(w http.ResponseWriter, req *http.Request) {
 
@@ -143,6 +124,7 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
     // Getting the query out of the Request
     queryParams := req.URL.Query()
 
+    searchTotal := "Nothing"
     searchText := ""
     pageNumber := 0
     
@@ -154,24 +136,35 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
         searchText = queryParams["search"][0]
     }
 
-    quotes, _ := getQuotesPrepared(searchText, pageNumber)
+    quotes, err := getQuotesPrepared(searchText, pageNumber)
+
+    if err != nil {
+        fmt.Println("Failed to get Quotes using prepared statement with error:", err)
+        return
+    }
 
     var pagesAround []Pages;
 
     for i := pageNumber - 2; i < pageNumber + 3; i++ {
         if i >= 0 {
-            pagesAround = append(pagesAround, Pages{i});
+            pagesAround = append(pagesAround, Pages{i, searchText});
         }
     }
 
+
+    if searchText != "" {
+        searchTotal = "\"" + searchText + "\""
+    }
+
     data := Data {
+        TotalSearch: searchTotal,
         Quotes: quotes,
         Pagination: pagesAround,
     }
 
     indexPage, _ := template.ParseFiles("src/static/templates/index.html")
 
-    err := indexPage.Execute(w, data)
+    err = indexPage.Execute(w, data)
 
     if err != nil {
         fmt.Fprintf(w, "Something went wrong: %s", err)
