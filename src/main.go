@@ -65,10 +65,10 @@ type APIPut struct {
     NewValue string `json:"NewValue"`
 }
 
-func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, error) {
+func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, bool, error) {
 
     startNumber := pageNumber * 15;
-    endNumber := startNumber + 15;
+    endNumber := startNumber + 16;
     searchString = "%" + searchString + "%"
 
     rows, err := pageSearchStatement.Query(searchString, startNumber, endNumber)
@@ -76,7 +76,7 @@ func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, error
 
     if err != nil {
         fmt.Println("Prepared statement failed to execute with error:", err)
-        return nil, err;
+        return nil, false, err;
     }
 
     var returnQuotes []QuoteQuery;
@@ -88,14 +88,17 @@ func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, error
 
         if err != nil {
             fmt.Println("Failed to retrieve row:", rows, "With the error:", err)
-            return nil, err
+            return nil, false, err
         }
 
         quote.Date = strings.TrimSuffix(quote.Date, "T00:00:00Z")
         returnQuotes = append(returnQuotes, quote)
 
     }
-    return returnQuotes, nil
+    
+    nextPage := len(returnQuotes) > 15
+
+    return returnQuotes, nextPage, nil
 }
 
 
@@ -220,7 +223,7 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
         searchText = queryParams["search"][0]
     }
 
-    quotes, err := getQuotesPrepared(searchText, pageNumber)
+    quotes, nextPageMarker, err := getQuotesPrepared(searchText, pageNumber)
 
     if err != nil {
         fmt.Println("Failed to get Quotes using prepared statement with error:", err)
@@ -229,12 +232,15 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
 
     var pagesAround []Pages;
 
-    for i := pageNumber - 2; i < pageNumber + 3; i++ {
-        if i >= 0 {
-            pagesAround = append(pagesAround, Pages{i, searchText});
-        }
+    if pageNumber > 0 {
+        pagesAround = append(pagesAround, Pages{pageNumber - 1, searchText})
     }
 
+    pagesAround = append(pagesAround, Pages{pageNumber, searchText})
+
+    if nextPageMarker {
+        pagesAround = append(pagesAround, Pages{pageNumber + 1, searchText})
+    }
 
     if searchText != "" {
         searchTotal = "\"" + searchText + "\""
