@@ -14,13 +14,11 @@ import (
     "github.com/mattn/go-sqlite3"
 )
 
-// TODO: @robert - function that returns quotes based on Query
-
 // Creating the Main Database for Global Access
 // TODO: @robert - this is perhaps not the best way to do this -> but it'll be fine
 var db *sql.DB;
 var sqlite3Conn sqlite3.SQLiteConn;
-
+var pageSearchStatement *sql.Stmt
 
 /*
  * Useful Structs
@@ -57,13 +55,19 @@ func getQueryForPage(pageNumber int) string {
 
 
 // TODO: add returning the error
-func getQuotesUsingQuery(queryString string) ([]QuoteQuery, error) {
+func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, error) {
 
-    rows, err := db.Query(queryString)
+    // pageSearchStatement.Query takes "searchString" "startNumber" "endNumber"
+    startNumber := pageNumber * 15;
+    endNumber := startNumber + 15;
+    searchString = "%" + searchString + "%"
+
+    rows, err := pageSearchStatement.Query(searchString, startNumber, endNumber)
     defer rows.Close()
 
     if err != nil {
-        fmt.Println("The queryString:", queryString, "has failed with error:", err);
+        fmt.Println("Prepared statement failed to execute with error:", err)
+        return nil, err;
     }
 
     var returnQuotes []QuoteQuery;
@@ -82,6 +86,8 @@ func getQuotesUsingQuery(queryString string) ([]QuoteQuery, error) {
         returnQuotes = append(returnQuotes, quote)
 
     }
+
+    fmt.Println("Returned Quotes:", returnQuotes)
 
     return returnQuotes, nil
 
@@ -131,45 +137,24 @@ func routeHandler(w http.ResponseWriter, req *http.Request) {
 
 func indexPage(w http.ResponseWriter, req *http.Request) {
     
-
-    var quotes []QuoteQuery;
-
-    // Getting the query out of the Request
-    queryParams := req.URL.Query()
-    pageList := queryParams["page"]
-    searchText := queryParams["search"]
     //searchAuthor := queryParams["author"] // TODO: add to regex
     //searchDate := queryParams["date"] // TODO: add to regex
 
+    // Getting the query out of the Request
+    queryParams := req.URL.Query()
+
+    searchText := ""
     pageNumber := 0
-
-    if len(searchText) != 0 {
-
-        searchText := searchText[0]
-
-        // TODO: I have to make it so that searches too get split into pages of 15
-        // otherwise you could ahve like - you know infinitely long single pages- a pain
-        // meaning searches must also implicity include pages from now on
-        queryStatement := fmt.Sprintf(`SELECT * FROM quotes as q WHERE q.quote LIKE '%%%s%%'`, searchText)
-        quotes, _ = getQuotesUsingQuery(queryStatement)
-        
-    } else {
-        var pageQuery string;
-
-        if len(pageList) > 0 {
-            pageQuery = pageList[0]
-        }
-        
-        // Getting the Page number that was queried for
-        pageNumber, _ = strconv.Atoi(pageQuery) // TODO: @robert: actually handle this error please...
-        fmt.Println(pageNumber)
-
-        // Getting relevant rows out of the DB
-        quotes, _ = getQuotesUsingQuery(getQueryForPage(pageNumber))
-
-
-        // Get index.html and render to client (reponseWriter)
+    
+    if queryParams.Has("page") {
+        pageNumber, _ = strconv.Atoi(queryParams["page"][0])
     }
+
+    if queryParams.Has("search") {
+        searchText = queryParams["search"][0]
+    }
+
+    quotes, _ := getQuotesPrepared(searchText, pageNumber)
 
     var pagesAround []Pages;
 
@@ -202,11 +187,25 @@ func main() {
     var connectionError error;
     db, connectionError = sql.Open("sqlite3", "file:src/DATABASE?cache=shared")
 
-    // TODO: proper error checking here, not on one line
-    if e := db.Ping(); e != nil || connectionError != nil {
-        fmt.Println("Failed to Start the DB")
+    defer db.Close()
+
+    if connectionError != nil {
+        fmt.Println("Failed to connect to the database (src/DATABASE) with error:", connectionError)
+    }
+
+    if e := db.Ping(); e != nil {
+        fmt.Println("DB Not Connected. Ping failed with error:", e)
     } else {
-        fmt.Println("Connected to SQLite3 Database (DATABASE file)")
+        fmt.Println("Connected to SQLite3 Database (src/DATABASE file)")
+    }
+
+    // Preparing Database Statement
+    var err error
+    pageSearchStatement, err = db.Prepare(`SELECT * FROM quotes as q WHERE q.quote LIKE ? ORDER BY date DESC LIMIT ?, ?`)
+    defer pageSearchStatement.Close()
+
+    if err != nil {
+        fmt.Println("Failed to prepare 'pageSearchStatement' with error:", err)
     }
     
     // HACK: we are actually just doing the jank shit now
