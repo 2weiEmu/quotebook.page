@@ -16,7 +16,8 @@
             <p>Search</p>
 
             <form action="/" method="GET">
-                <input type="text" name="search" placeholder="Currently: {{ .TotalSearch }}">
+                <input type="text" name="search" placeholder="Search: {{ .TotalSearch }}">
+                <input type="text" name="author" placeholder="Author: {{ .AuthorSearch }}">
                 <button type="submit">
                     Go!
                 </button>
@@ -49,6 +50,7 @@
                     <form action="/" method="GET">
                         <input style="display: none" name="page" value="{{ .Page }}">
                         <input style="display: none" name="search" value="{{ .Search }}">
+                        <input style="display: none" name="author" value="{{ .Author }}">
                         <button class="pagination-button" type="submit">{{ .Page }}</button>
                     </form>
                 {{ end }}

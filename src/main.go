@@ -35,10 +35,12 @@ type QuoteQuery struct {
 type Pages struct {
     Page int
     Search string
+    Author string
 }
 
 type Data struct {
     TotalSearch string
+    AuthorSearch string
     Quotes []QuoteQuery
     Pagination []Pages
 }
@@ -65,13 +67,15 @@ type APIPut struct {
     NewValue string `json:"NewValue"`
 }
 
-func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, bool, error) {
+
+func getQuotesPrepared(searchString string, pageNumber int, searchAuthor string) ([]QuoteQuery, bool, error) {
 
     startNumber := pageNumber * 15;
     endNumber := startNumber + 16;
     searchString = "%" + searchString + "%"
+    searchAuthor = "%" + searchAuthor + "%"
 
-    rows, err := pageSearchStatement.Query(searchString, startNumber, endNumber)
+    rows, err := pageSearchStatement.Query(searchString, searchAuthor, startNumber, endNumber)
     defer rows.Close()
 
     if err != nil {
@@ -186,7 +190,7 @@ func routeHandler(w http.ResponseWriter, req *http.Request) {
 
     pathRoute := req.URL.Path 
 
-    if match, _ := regexp.MatchString(`^\/(\?((page=[0-9]+)|(search=[\w]+)))?$`, pathRoute); match {
+    if match, _ := regexp.MatchString(`^\/(\?((page=[0-9]+)|(search=[\w]+)|(author=[\w]+)))?$`, pathRoute); match {
         indexPage(w, req)
 
     } else if match, _ := regexp.MatchString(`^/css/`, pathRoute); match {
@@ -213,6 +217,7 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
 
     searchTotal := "Nothing"
     searchText := ""
+    searchAuthor := ""
     pageNumber := 0
     
     if queryParams.Has("page") {
@@ -223,7 +228,11 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
         searchText = queryParams["search"][0]
     }
 
-    quotes, nextPageMarker, err := getQuotesPrepared(searchText, pageNumber)
+    if queryParams.Has("author") {
+        searchAuthor = queryParams["author"][0]
+    }
+
+    quotes, nextPageMarker, err := getQuotesPrepared(searchText, pageNumber, searchAuthor)
 
     if err != nil {
         fmt.Println("Failed to get Quotes using prepared statement with error:", err)
@@ -233,21 +242,27 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
     var pagesAround []Pages;
 
     if pageNumber > 0 {
-        pagesAround = append(pagesAround, Pages{pageNumber - 1, searchText})
+        pagesAround = append(pagesAround, Pages{pageNumber - 1, searchText, searchAuthor})
     }
 
-    pagesAround = append(pagesAround, Pages{pageNumber, searchText})
+    pagesAround = append(pagesAround, Pages{pageNumber, searchText, searchAuthor})
 
     if nextPageMarker {
-        pagesAround = append(pagesAround, Pages{pageNumber + 1, searchText})
+        pagesAround = append(pagesAround, Pages{pageNumber + 1, searchText, searchAuthor})
     }
 
     if searchText != "" {
         searchTotal = "\"" + searchText + "\""
     }
 
+    AuthorSearch := "Nobody"
+    if searchAuthor != "" {
+        AuthorSearch = "\"" + searchAuthor + "\""
+    }
+
     data := Data {
         TotalSearch: searchTotal,
+        AuthorSearch: AuthorSearch,
         Quotes: quotes,
         Pagination: pagesAround,
     }
@@ -282,7 +297,7 @@ func main() {
     }
 
     // Preparing Database Statement
-    pageSearchStatement, err = db.Prepare(`SELECT * FROM quotes as q WHERE q.quote LIKE ? ORDER BY date DESC LIMIT ?, ?`)
+    pageSearchStatement, err = db.Prepare(`SELECT * FROM quotes as q WHERE q.quote LIKE ? AND sayer LIKE ? ORDER BY date DESC LIMIT ?, ?`)
     defer pageSearchStatement.Close()
 
     if err != nil {
