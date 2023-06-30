@@ -68,7 +68,7 @@ type APIPut struct {
 }
 
 
-func getQuotesPrepared(searchString string, pageNumber int, searchAuthor string) ([]QuoteQuery, bool, error) {
+func GetQuotesPrepared(searchString string, pageNumber int, searchAuthor string) ([]QuoteQuery, bool, error) {
 
     startNumber := pageNumber * 15;
     endNumber := startNumber + 16;
@@ -107,7 +107,7 @@ func getQuotesPrepared(searchString string, pageNumber int, searchAuthor string)
 
 
 // Endpoint for sneding Form values
-func updateHandling(w http.ResponseWriter, req *http.Request) {
+func UpdateHandling(w http.ResponseWriter, req *http.Request) {
 
     if req.Method == http.MethodPost {
         fmt.Println("Received update...")
@@ -127,7 +127,7 @@ func updateHandling(w http.ResponseWriter, req *http.Request) {
 
 
 // Endpoint for sending raw JSON
-func apiHandling(w http.ResponseWriter, req *http.Request) {
+func ApiHandling(w http.ResponseWriter, req *http.Request) {
 
     var decoder *json.Decoder;
 
@@ -186,12 +186,12 @@ func apiHandling(w http.ResponseWriter, req *http.Request) {
 }
 
 
-func routeHandler(w http.ResponseWriter, req *http.Request) {
+func RouteHandler(w http.ResponseWriter, req *http.Request) {
 
     pathRoute := req.URL.Path 
 
     if match, _ := regexp.MatchString(`^\/(\?((page=[0-9]+)|(search=[\w]+)|(author=[\w]+)))?$`, pathRoute); match {
-        indexPage(w, req)
+        IndexPage(w, req)
 
     } else if match, _ := regexp.MatchString(`^/css/`, pathRoute); match {
         fmt.Println("Serving Static file...")
@@ -200,14 +200,14 @@ func routeHandler(w http.ResponseWriter, req *http.Request) {
         fs.ServeHTTP(w, req)
 
     } else if match, _ := regexp.MatchString(`^/updates/`, pathRoute); match {
-        updateHandling(w, req)
+        UpdateHandling(w, req)
 
     } else if match, _ := regexp.MatchString(`^/api/`, pathRoute); match {
-        apiHandling(w, req)
+        ApiHandling(w, req)
     }
 }
 
-func indexPage(w http.ResponseWriter, req *http.Request) {
+func IndexPage(w http.ResponseWriter, req *http.Request) {
     
     //searchAuthor := queryParams["author"] // TODO: add to regex
     //searchDate := queryParams["date"] // TODO: add to regex
@@ -232,7 +232,7 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
         searchAuthor = queryParams["author"][0]
     }
 
-    quotes, nextPageMarker, err := getQuotesPrepared(searchText, pageNumber, searchAuthor)
+    quotes, nextPageMarker, err := GetQuotesPrepared(searchText, pageNumber, searchAuthor)
 
     if err != nil {
         fmt.Println("Failed to get Quotes using prepared statement with error:", err)
@@ -305,7 +305,7 @@ func main() {
     }
     
     // HACK: we are actually just doing the jank shit now
-    http.HandleFunc("/", routeHandler)
+    http.HandleFunc("/", RouteHandler)
 
     fmt.Println("Hosted server on localhost port 8000.")
 
