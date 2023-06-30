@@ -7,7 +7,7 @@ This website was written / is going to be writte in Golang - for the simple sake
 ## Functional Requirements List
 - [X] Page-based website, that loads 15 quotes at the same time, chronological order
 - [X] Easy Search interface that allows searching for the following parts of a quote:
-  - [ ] Author
+  - [X] Author
   - [X] Contained Text
   - [ ] Date (day/month/year combo)
     - [ ] Year only
