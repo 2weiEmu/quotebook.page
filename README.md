@@ -80,8 +80,9 @@ go get github.com/mattn/go-sqlite3
 
 Now you can run the project from the root folder using
 ```sh 
-go run src/main.go
+go run src/main.go src/dbStmt.go
 ```
+(Feel free to make a scrip to automate this)
 Note the first startup may take a second.
 
 After that the site is going to be hosted on `localhost:8000` (by default at least)

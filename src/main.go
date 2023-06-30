@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
-	"strings"
 
 	// External Packages
 	"github.com/mattn/go-sqlite3"
@@ -66,45 +65,6 @@ type APIPut struct {
     ChangedAttr string `json:"ChangedAttr"`
     NewValue string `json:"NewValue"`
 }
-
-
-func GetQuotesPrepared(searchString string, pageNumber int, searchAuthor string) ([]QuoteQuery, bool, error) {
-
-    startNumber := pageNumber * 15;
-    endNumber := startNumber + 16;
-    searchString = "%" + searchString + "%"
-    searchAuthor = "%" + searchAuthor + "%"
-
-    rows, err := pageSearchStatement.Query(searchString, searchAuthor, startNumber, endNumber)
-    defer rows.Close()
-
-    if err != nil {
-        fmt.Println("Prepared statement failed to execute with error:", err)
-        return nil, false, err;
-    }
-
-    var returnQuotes []QuoteQuery;
-
-    for rows.Next() {
-
-        var quote QuoteQuery;
-        err = rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer)
-
-        if err != nil {
-            fmt.Println("Failed to retrieve row:", rows, "With the error:", err)
-            return nil, false, err
-        }
-
-        quote.Date = strings.TrimSuffix(quote.Date, "T00:00:00Z")
-        returnQuotes = append(returnQuotes, quote)
-
-    }
-    
-    nextPage := len(returnQuotes) > 15
-
-    return returnQuotes, nextPage, nil
-}
-
 
 // Endpoint for sneding Form values
 func UpdateHandling(w http.ResponseWriter, req *http.Request) {
@@ -209,7 +169,6 @@ func RouteHandler(w http.ResponseWriter, req *http.Request) {
 
 func IndexPage(w http.ResponseWriter, req *http.Request) {
     
-    //searchAuthor := queryParams["author"] // TODO: add to regex
     //searchDate := queryParams["date"] // TODO: add to regex
 
     // Getting the query out of the Request
@@ -232,7 +191,7 @@ func IndexPage(w http.ResponseWriter, req *http.Request) {
         searchAuthor = queryParams["author"][0]
     }
 
-    quotes, nextPageMarker, err := GetQuotesPrepared(searchText, pageNumber, searchAuthor)
+    quotes, nextPageMarker, err := GetQuotesPrepared(pageSearchStatement, searchText, pageNumber, searchAuthor)
 
     if err != nil {
         fmt.Println("Failed to get Quotes using prepared statement with error:", err)
