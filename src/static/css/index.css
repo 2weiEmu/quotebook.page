@@ -46,6 +46,7 @@ body {
     z-index: 69;
     position: relative;
     user-select: none;
+    font-size: 1vw;
 }
 
 #topCoverer {
@@ -108,18 +109,17 @@ body {
     position: fixed;
     width: inherit;
     height: fit-content;
-    top: 83%;
+    bottom: -16em;
     font-family: Calibri;
     white-space: pre;
     text-align: center;
     z-index: 68;
     font-size: 1.5vmin;
-    /* background-color: var(--background); */
 }
 
 #search {
-    left: -5rem;
-    top: -12.9rem;
+    left: -5em;
+    top: -10.2em;
     white-space: normal;
     position: relative;
     font-family: seagram;
@@ -205,4 +205,98 @@ body {
 
 #quoteOfDay {
     margin-left: 10%;
+}
+
+#mobileCoverer {
+    display: none;
+}
+
+#divider {
+    display: none;
+}
+
+@media only screen and (orientation: portrait) {
+    #quoteOfDayContainer {
+        left: 23vw;
+        font-size: 1.5rem;
+        top: 0rem;
+    }
+
+    #addQuote {
+        top: 18rem;
+        left: 10vw;
+        font-size: 1.5rem;
+    }
+
+    #quoteroller {
+        padding-top: 10rem;
+        scroll-padding-top: 80%;
+        padding-left: 4rem;
+        z-index: 66;
+        height: 75vh;
+    }
+
+    #scroll {
+        font-size: 0.8rem;
+    }
+
+    #bottomBar {
+        bottom: -13em;
+        left: 3em;
+        font-size: 1.2rem;
+    }
+
+    #mobileCoverer {
+        width: 100%;
+        height: 39em;
+        background-color: var(--background);
+        position: fixed;
+        top: 0em;
+        display: block;
+        z-index: 67;
+        pointer-events: none;
+    }
+
+    #quoteOfDayContainer {
+        z-index: 68;
+    }
+
+    .quoteContainer {
+        height: 10vh;
+    }
+
+    .quoteContainer:first-child {
+        margin-top: 70vh;
+    }
+    
+    .quoteContainer:last-child {
+        margin-bottom: 20vh;
+    }
+
+    #search {
+        bottom: -8.5em;
+        padding-bottom: 9%;
+    }
+
+    #searchBox {
+        top: -3.5em;
+    }
+
+    #searchInner {
+        left: 1em;
+        width: 40%;
+    }
+
+    #divider {
+        background-color: var(--green);
+        margin-left: auto;
+        margin-right: auto;
+        width: 40em;
+        margin-left: 4em;
+        height: 2px;
+        position: fixed;
+        display: block;
+        top: 16.5em;
+        z-index: 68;
+    }
 }

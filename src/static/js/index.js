@@ -23,7 +23,11 @@ window.onload = async function ()
     search.placeholder = shadowWizardMoneyGang[Math.floor(Math.random() * shadowWizardMoneyGang.length)];
 
     function quoteSize(quote) {
-        quote.style.fontSize = String(Math.min(Math.max(3.5 - (0.08 * Math.abs(((quote.getBoundingClientRect().y / window.innerHeight * 100) - 41))), 2), 3)).concat("vmin");
+        if (window.innerHeight <= window.innerWidth) {
+            quote.style.fontSize = String(Math.min(Math.max(3.5 - (0.08 * Math.abs(((quote.getBoundingClientRect().y / window.innerHeight * 100) - 41))), 2), 3)).concat("rem");
+        } else {
+            quote.style.fontSize = String(Math.min(Math.max(2.5 - (0.08 * Math.abs(((quote.getBoundingClientRect().y / window.innerHeight * 100) - 68))), 1), 2)).concat("rem");
+        }
     }
     quotes.forEach(quote => {
         quoteSize(quote);
