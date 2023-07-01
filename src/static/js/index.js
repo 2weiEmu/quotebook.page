@@ -5,7 +5,7 @@ window.onload = async function ()
     let context = canvas.getContext("2d");
     let quotes = document.querySelectorAll(".quote");
     // let quoteContainers = document.querySelectorAll(".quoteContainer");
-    let search = document.querySelector("#search");
+    let search = document.querySelector("#searchInner");
     let container = document.querySelector("#quoteroller");
 
     context.font = window.getComputedStyle(scroll).fontSize.concat(" ").concat(window.getComputedStyle(scroll).fontFamily)

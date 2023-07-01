@@ -114,17 +114,18 @@ body {
     text-align: center;
     z-index: 68;
     font-size: 1.5vmin;
-    background-color: var(--background);
+    /* background-color: var(--background); */
 }
 
 #search {
     left: -5rem;
-    top: -11.7rem;
+    top: -12.9rem;
     white-space: normal;
     position: relative;
     font-family: seagram;
     background-color: var(--background);
     padding-bottom: 10%;
+    padding-top: 0.75%;
     width: inherit;
     z-index: 70;
 }
