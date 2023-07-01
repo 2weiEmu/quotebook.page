@@ -2,3 +2,5 @@ go.sum
 go.mod
 go
 src/DATABASE
+src.old
+danny.page
