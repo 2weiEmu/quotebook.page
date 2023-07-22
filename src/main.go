@@ -264,6 +264,7 @@ func main() {
     }
     
     // HACK: we are actually just doing the jank shit now
+    // NOTE: apparently this is the accepted way of doing this?
     http.HandleFunc("/", RouteHandler)
 
     fmt.Println("Hosted server on localhost port 8000.")

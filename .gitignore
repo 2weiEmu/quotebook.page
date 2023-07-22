@@ -1,3 +1,5 @@
 go.sum
 go.mod
 src/DATABASE
+main
+main-test
