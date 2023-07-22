@@ -1,59 +1,86 @@
 <!DOCTYPE html>
 
-
 <html>
 
     <head>
         <title>Quotebook of some Weird AE Shitters</title>
-        <link href="../css/index.css" rel="stylesheet"> 
+        <link href="../css/index.css" rel="stylesheet">
+        <script src="../js/index.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
 
 
-    <body>
-
-        <div class="sidebar-wrapper">
-
-            <p>Search</p>
-
-            <form action="/" method="GET">
-                <input type="text" name="search" placeholder="Currently: {{ .TotalSearch }}">
-                <button type="submit">
-                    Go!
-                </button>
-            </form>
-
-            <br><br>
-            <p>Add Quote<p>
-            <form action="/updates/" method="POST">
-                <input required maxlength=512 type="text" name="Quote" placeholder="Quote here...">
-                <input required type="date" name="Date">
-                <input required maxlength=50 type="text" name="Sayer" placeholder="Sayer...">
-                <button type="submit">
-                    Add!
-                </button>
-            </form>
-
+    <body id="body">
+        <canvas id="canvas"></canvas>
+        <div id ="scrollContainer">
+            <div id="topCoverer"></div>
+            <div id="scroll"></div>
+            <div id="botCoverer"></div>
         </div>
-
-        <div class="content-wrapper">
+        <div id="mobileCoverer"></div>
+        <div id="divider"></div>
+        <div id="quoteOfDayContainer">
+            <div>Upon this pivotal Day, 
+                the Pantheon ordain 
+                        the following Testimony:</div>
+            <div id="quoteOfDay">"What's an integer?" - Juan 2021</div>
+        </div>
+        <div id="bottomBar">
+            <div id="searchBox">
+                __________________________________________
+                |                                                                                            |
+                |                                                                                            |
+                ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+            </div>
+            <form action="/" method="GET" id="search">
+                <input type="text" name="search" placeholder="Consult the Enigmatic Knowledge..." id="searchInner">
+                <input type="submit" tabindex="-1" hidefocus="true" hidden/>
+            </form>
+        </div>
+        <div id="quoteroller">
+            <!-- <div class="quoteContainer"></div>
             {{ range .Quotes }}
-            <div class="quote-wrapper">
-                <p class="quote-text"> {{ .Quote }} </p>
-                <p class="quote-date"> {{ .Date }} </p>
-                <p class="quote-author">Sayer> {{ .Sayer }} </p>
+            <div class="quoteContainer">
+                <div class="quote">{{ .Quote }}</div>
+                <div class="author">- {{ .Sayer }} {{ .Date }}</div>
             </div>
             {{ end }}
-
-            <div class="pagination-wrapper">
-                {{ range .Pagination }}
-                    <form action="/" method="GET">
-                        <input style="display: none" name="page" value="{{ .Page }}">
-                        <input style="display: none" name="search" value="{{ .Search }}">
-                        <button class="pagination-button" type="submit">{{ .Page }}</button>
-                    </form>
-                {{ end }}
+            <div class="quoteContainer"></div> -->
+            <div class="quoteContainer">
+                <div class="quote">"Lorem ipsum dolor"</div>
+                <div class="author">- Some ancient guy</div>
+            </div>
+            <div class="quoteContainer">
+                <div class="quote">"sit amet, consectetur"</div>
+                <div class="author">- Some ancient guy</div>
+            </div>
+            <div class="quoteContainer">
+                <div class="quote">"adipiscing elit. Nulla"</div>
+                <div class="author">- Some ancient guy</div>
+            </div>
+            <div class="quoteContainer">
+                <div class="quote">"consequat mauris aliquet,"</div>
+                <div class="author">- Some ancient guy</div>
+            </div>
+            <div class="quoteContainer">
+                <div class="quote">"aliquet odio quis,"</div>
+                <div class="author">- Some ancient guy</div>
             </div>
         </div>
+        <form action="/updates/" method="POST" id="addQuote">
+            <div>Upon the fateful Date of </div>
+            <input required type="date" name="Date" placeholder="../../.." id="date">
+            <div> our Compatriot </div>
+            <input required maxlength="50" type="text" name="Sayer" placeholder="....." id="sayer">
+            <div> spoketh aloud the Following: </div>
+            <input required maxlength="512" type="text" name="Quote" placeholder="....." id="quoteToAdd">
+            <div id="confirm">and Thus shall it be inked forevermore.</div>
+            <button type="submit" id="confirmBox">__________________________________
+|                                                                          |
+|                                                                          |
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾</button>
+        </div>
+        
     </body>
 
 </html>
