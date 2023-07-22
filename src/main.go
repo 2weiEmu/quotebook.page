@@ -64,18 +64,12 @@ type APIPut struct {
 	NewValue    string `json:"NewValue"`
 }
 
-<<<<<<< HEAD
 func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, bool, error) {
 
     startNumber := pageNumber * 15;
     endNumber := startNumber + 16;
     searchString = "%" + searchString + "%"
-=======
-func getQuotesPrepared(searchString string) ([]QuoteQuery, error) {
-
-	searchString = "%" + searchString + "%"
->>>>>>> 4bdd429e8941335abc278cef79600211e94acb36
-
+    
 	// rows, err := pageSearchStatement.Query(searchString)
 	rows, err := pageSearchStatement.Query(searchString, 0, 10000000000)
 	defer rows.Close()
