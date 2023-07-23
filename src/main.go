@@ -68,20 +68,19 @@ type APIPut struct {
 // Endpoint for sending Form values
 func UpdateHandling(w http.ResponseWriter, req *http.Request) {
 
-    if req.Method == http.MethodPost {
-        fmt.Println("Received update...")
+	if req.Method == http.MethodPost {
+		fmt.Println("Received update...")
 
-        quote := req.FormValue("Quote")
-        date := req.FormValue("Date")
-        sayer := req.FormValue("Sayer")
+		quote := req.FormValue("Quote")
+		date := req.FormValue("Date")
+		sayer := req.FormValue("Sayer")
 
-        db.Exec("INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)", quote, date, sayer)
+		db.Exec("INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)", quote, date, sayer)
 
-        // Redirect to prevent form resubmission
+		// Redirect to prevent form resubmission
 
     }
-
-    http.Redirect(w, req, "/", http.StatusSeeOther)
+	http.Redirect(w, req, "/", http.StatusSeeOther)
 }
 
 // Endpoint for sending raw JSON
@@ -89,19 +88,19 @@ func ApiHandling(w http.ResponseWriter, req *http.Request) {
 
     var decoder *json.Decoder
 
-    if req.Body != nil {
-        decoder = json.NewDecoder(req.Body)
-    }
+	if req.Body != nil {
+		decoder = json.NewDecoder(req.Body)
+	}
 
-    if req.Method == http.MethodPost {
+	if req.Method == http.MethodPost {
 
-        var post APIPost
-        err := decoder.Decode(&post)
+		var post APIPost
+		err := decoder.Decode(&post)
 
-        if err != nil {
-            fmt.Println("Post request failed. Error:", err)
-            fmt.Fprintf(w, "%d", http.StatusInternalServerError)
-        }
+		if err != nil {
+			fmt.Println("Post request failed. Error:", err)
+			fmt.Fprintf(w, "%d", http.StatusInternalServerError)
+		}
 
         fmt.Println(post)
 
@@ -110,34 +109,35 @@ func ApiHandling(w http.ResponseWriter, req *http.Request) {
         // TODO: jaja prepared statements and all that
         db.Exec(`INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)`, post.Quote, post.Date, post.Sayer)
 
-        // TODO: return the id to the post making the request -> they might need it
-    } else if req.Method == http.MethodDelete {
+		// TODO: jaja prepared statements and all that
+		db.Exec(`INSERT INTO quotes (quote, date, sayer) VALUES ( ?, ?, ?)`, post.Quote, post.Date, post.Sayer)
 
-        // TODO: delete does not really work - like - we have to figure out a bit how to do this... maybe we just don't...
+		// TODO: return the id to the post making the request -> they might need it
+	} else if req.Method == http.MethodDelete {
 
-        var apiDelete APIDelete
+		// TODO: delete does not really work - like - we have to figure out a bit how to do this... maybe we just don't...
 
-        err := decoder.Decode(&apiDelete)
+		var apiDelete APIDelete
 
-        if err != nil {
-            fmt.Println("Delete request failed. Error:", err)
-            fmt.Fprintf(w, "%d", http.StatusInternalServerError)
-        }
+		err := decoder.Decode(&apiDelete)
 
-        fmt.Println(apiDelete)
+		if err != nil {
+			fmt.Println("Delete request failed. Error:", err)
+			fmt.Fprintf(w, "%d", http.StatusInternalServerError)
+		}
 
-    } else if req.Method == http.MethodPut {
+		fmt.Println(apiDelete)
 
-        var apiPut APIPut
+	} else if req.Method == http.MethodPut {
 
-        err := decoder.Decode(&apiPut)
+		var apiPut APIPut
 
-        if err != nil {
-            fmt.Println("Put request failed. Error:", err)
-            fmt.Fprintf(w, "%d", http.StatusInternalServerError)
-        }
+		err := decoder.Decode(&apiPut)
 
-        // TODO: changing attribute listed
+		if err != nil {
+			fmt.Println("Put request failed. Error:", err)
+			fmt.Fprintf(w, "%d", http.StatusInternalServerError)
+		}
 
     }
 }
@@ -171,8 +171,10 @@ func IndexPage(w http.ResponseWriter, req *http.Request) {
     //searchAuthor := queryParams["author"] // TODO: add to regex
     //searchDate := queryParams["date"] // TODO: add to regex
 
-    // Getting the query out of the Request
-    queryParams := req.URL.Query()
+	//searchAuthor := queryParams["author"] // TODO: add to regex
+	//searchDate := queryParams["date"] // TODO: add to regex
+
+	queryParams := req.URL.Query()
 
     searchTotal := "Nothing"
     searchText := ""
@@ -228,11 +230,12 @@ func IndexPage(w http.ResponseWriter, req *http.Request) {
 
     indexPage, _ := template.ParseFiles("src/static/templates/index.html")
 
-    err = indexPage.Execute(w, data)
 
-    if err != nil {
-        fmt.Fprintf(w, "Something went wrong: %s", err)
-    }
+	err = indexPage.Execute(w, data)
+
+	if err != nil {
+		fmt.Fprintf(w, "Something went wrong: %s", err)
+	}
 }
 
 /*
@@ -272,5 +275,4 @@ func main() {
     fmt.Println("Hosted server on localhost port 8000.")
 
     http.ListenAndServe(":8000", nil)
-
 }
