@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
-	"strings"
 
 	// External Packages
 	"github.com/mattn/go-sqlite3"
@@ -33,14 +32,16 @@ type QuoteQuery struct {
 }
 
 type Pages struct {
-	Page   int
-	Search string
+    Page int
+    Search string
+    Author string
 }
 
 type Data struct {
-	TotalSearch string
-	Quotes      []QuoteQuery
-	Pagination  []Pages
+    TotalSearch string
+    AuthorSearch string
+    Quotes []QuoteQuery
+    Pagination []Pages
 }
 
 type APIPost struct {
@@ -64,67 +65,8 @@ type APIPut struct {
 	NewValue    string `json:"NewValue"`
 }
 
-func getQuotesPrepared(searchString string, pageNumber int) ([]QuoteQuery, bool, error) {
-
-    startNumber := pageNumber * 15;
-    endNumber := startNumber + 16;
-    searchString = "%" + searchString + "%"
-    
-	// rows, err := pageSearchStatement.Query(searchString)
-	rows, err := pageSearchStatement.Query(searchString, 0, 10000000000)
-	defer rows.Close()
-
-<<<<<<< HEAD
-    if err != nil {
-        fmt.Println("Prepared statement failed to execute with error:", err)
-        return nil, false, err;
-    }
-=======
-	if err != nil {
-		fmt.Println("Prepared statement failed to execute with error:", err)
-		return nil, err
-	}
->>>>>>> 4bdd429e8941335abc278cef79600211e94acb36
-
-	var returnQuotes []QuoteQuery
-
-	for rows.Next() {
-
-<<<<<<< HEAD
-        var quote QuoteQuery;
-        err = rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer)
-
-        if err != nil {
-            fmt.Println("Failed to retrieve row:", rows, "With the error:", err)
-            return nil, false, err
-        }
-=======
-		var quote QuoteQuery
-		err := rows.Scan(&quote.ID, &quote.Quote, &quote.Date, &quote.Sayer)
-
-		if err != nil {
-			fmt.Println("Failed to retrieve row:", rows, "With the error:", err)
-			return nil, err
-		}
->>>>>>> 4bdd429e8941335abc278cef79600211e94acb36
-
-		quote.Date = strings.TrimSuffix(quote.Date, "T00:00:00Z")
-		returnQuotes = append(returnQuotes, quote)
-
-<<<<<<< HEAD
-    }
-    
-    nextPage := len(returnQuotes) > 15
-
-    return returnQuotes, nextPage, nil
-=======
-	}
-	return returnQuotes, nil
->>>>>>> 4bdd429e8941335abc278cef79600211e94acb36
-}
-
-// Endpoint for sneding Form values
-func updateHandling(w http.ResponseWriter, req *http.Request) {
+// Endpoint for sending Form values
+func UpdateHandling(w http.ResponseWriter, req *http.Request) {
 
 	if req.Method == http.MethodPost {
 		fmt.Println("Received update...")
@@ -143,7 +85,7 @@ func updateHandling(w http.ResponseWriter, req *http.Request) {
 }
 
 // Endpoint for sending raw JSON
-func apiHandling(w http.ResponseWriter, req *http.Request) {
+func ApiHandling(w http.ResponseWriter, req *http.Request) {
 
 	var decoder *json.Decoder
 
@@ -200,12 +142,13 @@ func apiHandling(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func routeHandler(w http.ResponseWriter, req *http.Request) {
+
+func RouteHandler(w http.ResponseWriter, req *http.Request) {
 
 	pathRoute := req.URL.Path
 
-	if match, _ := regexp.MatchString(`^\/(\?((page=[0-9]+)|(search=[\w]+)))?$`, pathRoute); match {
-		indexPage(w, req)
+    if match, _ := regexp.MatchString(`^\/(\?((page=[0-9]+)|(search=[\w]+)|(author=[\w]+)))?$`, pathRoute); match {
+        IndexPage(w, req)
 
 	} else if match, _ := regexp.MatchString(`^/css/`, pathRoute); match {
 		fmt.Println("Serving Static file...")
@@ -213,15 +156,17 @@ func routeHandler(w http.ResponseWriter, req *http.Request) {
 		http.StripPrefix("static/", fs)
 		fs.ServeHTTP(w, req)
 
-	} else if match, _ := regexp.MatchString(`^/updates/`, pathRoute); match {
-		updateHandling(w, req)
+    } else if match, _ := regexp.MatchString(`^/updates/`, pathRoute); match {
+        UpdateHandling(w, req)
 
-	} else if match, _ := regexp.MatchString(`^/api/`, pathRoute); match {
-		apiHandling(w, req)
-	}
+    } else if match, _ := regexp.MatchString(`^/api/`, pathRoute); match {
+        ApiHandling(w, req)
+    }
 }
 
-func indexPage(w http.ResponseWriter, req *http.Request) {
+func IndexPage(w http.ResponseWriter, req *http.Request) {
+    
+    //searchDate := queryParams["date"] // TODO: add to regex
 
 	//searchAuthor := queryParams["author"] // TODO: add to regex
 	//searchDate := queryParams["date"] // TODO: add to regex
@@ -229,57 +174,56 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
 	// Getting the query out of the Request
 	queryParams := req.URL.Query()
 
-	searchTotal := "Nothing"
-	searchText := ""
-	pageNumber := 0
+    searchTotal := "Nothing"
+    searchText := ""
+    searchAuthor := ""
+    pageNumber := 0
+    
+    if queryParams.Has("page") {
+        pageNumber, _ = strconv.Atoi(queryParams["page"][0])
+    }
 
-<<<<<<< HEAD
-    quotes, nextPageMarker, err := getQuotesPrepared(searchText, pageNumber)
-=======
-	if queryParams.Has("page") {
-		pageNumber, _ = strconv.Atoi(queryParams["page"][0])
-	}
->>>>>>> 4bdd429e8941335abc278cef79600211e94acb36
+    if queryParams.Has("author") {
+        searchAuthor = queryParams["author"][0]
+    }
+
+    quotes, nextPageMarker, err := GetQuotesPrepared(pageSearchStatement, searchText, pageNumber, searchAuthor)
 
 	if queryParams.Has("search") {
 		searchText = queryParams["search"][0]
 	}
 
-	quotes, err := getQuotesPrepared(searchText)
 
-<<<<<<< HEAD
+	var pagesAround []Pages
+
     if pageNumber > 0 {
-        pagesAround = append(pagesAround, Pages{pageNumber - 1, searchText})
+        pagesAround = append(pagesAround, Pages{pageNumber - 1, searchText, searchAuthor})
     }
 
-    pagesAround = append(pagesAround, Pages{pageNumber, searchText})
+    pagesAround = append(pagesAround, Pages{pageNumber, searchText, searchAuthor})
 
     if nextPageMarker {
-        pagesAround = append(pagesAround, Pages{pageNumber + 1, searchText})
+        pagesAround = append(pagesAround, Pages{pageNumber + 1, searchText, searchAuthor})
     }
-=======
 	if err != nil {
 		fmt.Println("Failed to get Quotes using prepared statement with error:", err)
 		return
 	}
 
-	var pagesAround []Pages
->>>>>>> 4bdd429e8941335abc278cef79600211e94acb36
+    AuthorSearch := "Nobody"
+    if searchAuthor != "" {
+        AuthorSearch = "\"" + searchAuthor + "\""
+    }
 
-	for i := pageNumber - 2; i < pageNumber+3; i++ {
-		if i >= 0 {
-			pagesAround = append(pagesAround, Pages{i, searchText})
-		}
-	}
+    data := Data {
+        TotalSearch: searchTotal,
+        AuthorSearch: AuthorSearch,
+        Quotes: quotes,
+        Pagination: pagesAround,
+    }
 
 	if searchText != "" {
 		searchTotal = "\"" + searchText + "\""
-	}
-
-	data := Data{
-		TotalSearch: searchTotal,
-		Quotes:      quotes,
-		Pagination:  pagesAround,
 	}
 
 	indexPage, _ := template.ParseFiles("src/static/templates/index.html")
@@ -296,59 +240,36 @@ func indexPage(w http.ResponseWriter, req *http.Request) {
  */
 func main() {
 
-<<<<<<< HEAD
     db, err = sql.Open("sqlite3", "file:src/DATABASE?cache=shared")
-=======
-	var connectionError error
-	db, connectionError = sql.Open("sqlite3", "file:src/DATABASE?cache=shared")
->>>>>>> 4bdd429e8941335abc278cef79600211e94acb36
 
 	defer db.Close()
 
-<<<<<<< HEAD
     if err != nil {
         fmt.Println("Failed to connect to the database (src/DATABASE) with error:", err)
     }
 
-    if err = db.Ping(); err != nil {
-        fmt.Println("DB Not Connected. Ping failed with error:", err)
-    } else {
-        fmt.Println("Connected to SQLite3 Database (src/DATABASE file)")
-    }
-
     // Preparing Database Statement
-    pageSearchStatement, err = db.Prepare(`SELECT * FROM quotes as q WHERE q.quote LIKE ? ORDER BY date DESC LIMIT ?, ?`)
-    defer pageSearchStatement.Close()
-=======
-	if connectionError != nil {
-		fmt.Println("Failed to connect to the database (src/DATABASE) with error:", connectionError)
-	}
+    pageSearchStatement, err = db.Prepare(`SELECT * FROM quotes as q WHERE q.quote LIKE ? AND sayer LIKE ? ORDER BY date DESC LIMIT ?, ?`)
 
+    defer pageSearchStatement.Close()
 	if e := db.Ping(); e != nil {
 		fmt.Println("DB Not Connected. Ping failed with error:", e)
 	} else {
 		fmt.Println("Connected to SQLite3 Database (src/DATABASE file)")
 	}
+    if err != nil {
+        fmt.Println("Failed to prepare 'pageSearchStatement' with error:", err)
+    }
+    
+    // HACK: we are actually just doing the jank shit now
+    // NOTE: apparently this is the accepted way of doing this?
+    http.HandleFunc("/", RouteHandler)
 
 	// Preparing Database Statement
-	var err error
-	pageSearchStatement, err = db.Prepare(`SELECT * FROM quotes as q WHERE q.quote LIKE ? ORDER BY date DESC LIMIT ?, ?`)
-	defer pageSearchStatement.Close()
->>>>>>> 4bdd429e8941335abc278cef79600211e94acb36
 
-	if err != nil {
-		fmt.Println("Failed to prepare 'pageSearchStatement' with error:", err)
-	}
 
-<<<<<<< HEAD
     fmt.Println("Hosted server on localhost port 8000.")
 
     http.ListenAndServe(":8000", nil)
 
-=======
-	// HACK: we are actually just doing the jank shit now
-	http.HandleFunc("/", routeHandler)
-
-	http.ListenAndServe(":8000", nil)
->>>>>>> 4bdd429e8941335abc278cef79600211e94acb36
 }

@@ -7,7 +7,7 @@ This website was written / is going to be writte in Golang - for the simple sake
 ## Functional Requirements List
 - [X] Page-based website, that loads 15 quotes at the same time, chronological order
 - [X] Easy Search interface that allows searching for the following parts of a quote:
-  - [ ] Author
+  - [X] Author
   - [X] Contained Text
   - [ ] Date (day/month/year combo)
     - [ ] Year only
@@ -80,8 +80,9 @@ go get github.com/mattn/go-sqlite3
 
 Now you can run the project from the root folder using
 ```sh 
-go run src/main.go
+go run src/main.go src/dbStmt.go
 ```
+(Feel free to make a scrip to automate this)
 Note the first startup may take a second.
 
 After that the site is going to be hosted on `localhost:8000` (by default at least)
