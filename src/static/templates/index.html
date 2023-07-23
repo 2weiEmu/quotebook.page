@@ -6,7 +6,6 @@
         <title>Quotebook of some Weird AE Shitters</title>
         <link href="../css/index.css" rel="stylesheet">
         <script src="../js/index.js"></script>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
 
 
@@ -17,35 +16,17 @@
             <div id="scroll"></div>
             <div id="botCoverer"></div>
         </div>
-        <div id="mobileCoverer"></div>
-        <div id="divider"></div>
-        <div id="quoteOfDayContainer">
-            <div>Upon this pivotal Day, 
-                the Pantheon ordain 
-                        the following Testimony:</div>
-            <div id="quoteOfDay">"What's an integer?" - Juan 2021</div>
-        </div>
-        <div id="bottomBar">
-            <div id="searchBox">
-                __________________________________________
-                |                                                                                            |
-                |                                                                                            |
-                ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-            </div>
-            <form action="/" method="GET" id="search">
-                <input type="text" name="search" placeholder="Consult the Enigmatic Knowledge..." id="searchInner">
-                <input type="submit" tabindex="-1" hidefocus="true" hidden/>
-            </form>
-        </div>
         <div id="quoteroller">
-            <!-- <div class="quoteContainer"></div>
-            {{ range .Quotes }}
-            <div class="quoteContainer">
-                <div class="quote">{{ .Quote }}</div>
-                <div class="author">- {{ .Sayer }} {{ .Date }}</div>
+            <div id="bottomBar">
+                <div id="searchBox">
+                    __________________________________________
+                    |                                                                                            |
+                    |                                                                                            |
+                    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+                </div>
+                <div id="search">Consult the Enigmatic Knowledge...</div>
             </div>
-            {{ end }}
-            <div class="quoteContainer"></div> -->
+            <div class="quoteContainer"></div>
             <div class="quoteContainer">
                 <div class="quote">"Lorem ipsum dolor"</div>
                 <div class="author">- Some ancient guy</div>
@@ -66,19 +47,20 @@
                 <div class="quote">"aliquet odio quis,"</div>
                 <div class="author">- Some ancient guy</div>
             </div>
+            <div class="quoteContainer"></div>
         </div>
-        <form action="/updates/" method="POST" id="addQuote">
-            <div>Upon the fateful Date of </div>
-            <input required type="date" name="Date" placeholder="../../.." id="date">
-            <div> our Compatriot </div>
-            <input required maxlength="50" type="text" name="Sayer" placeholder="....." id="sayer">
-            <div> spoketh aloud the Following: </div>
-            <input required maxlength="512" type="text" name="Quote" placeholder="....." id="quoteToAdd">
+        <div id="addQuote">
+            <div>Upon the fateful date of </div>
+            <div id="date">.....</div>
+            <div> our Compatriot  </div>
+            <div id="sayer">.....</div>
+            <div> spoketh aloud the following: </div>
+            <div id="quoteToAdd">.....</div>
             <div id="confirm">and Thus shall it be inked forevermore.</div>
-            <button type="submit" id="confirmBox">__________________________________
+            <div id="confirmBox">__________________________________
 |                                                                          |
 |                                                                          |
-‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾</button>
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾</div>
         </div>
         
     </body>
