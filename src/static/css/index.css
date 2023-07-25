@@ -25,6 +25,48 @@ body {
     display: flex;
 }
 
+/* input, button {
+    background-color: var(--background);
+    color: var(--green);
+    font-family: seagram;
+    border: 2px solid grey;
+    padding: 5px;
+}
+input:invalid {
+    border: 2px solid var(--dark-red)
+}
+input:empty {
+    border: 2px solid grey;
+}
+.sidebar-wrapper {
+    width: 15%;
+    padding: 30px;
+    position: sticky;
+    top: 0;
+}
+.content-wrapper {
+    width: 85%;
+    padding: 30px 0 30px 0;
+}
+.quote-wrapper {
+    padding: 10px 0 10px 0;
+}
+.quote-text {
+    border-left: 10px solid grey;
+    padding-left: 10px;
+}
+.pagination-wrapper {
+    display: flex;
+    width: 30%;
+    justify-content: space-evenly;
+}
+.pagination-wrapper form {
+    width: 100%;
+}
+.pagination-button {
+    width: 50%;
+} */
+
 #canvas {
     display: none;
 }
@@ -38,7 +80,6 @@ body {
     height: 95%;
     transform: translate(-50%, -50%);
     z-index: 69;
-    pointer-events: none;
 }
 
 #scroll {
@@ -46,7 +87,7 @@ body {
     z-index: 69;
     position: relative;
     user-select: none;
-    font-size: 1vw;
+    pointer-events: none;
 }
 
 #topCoverer {
@@ -68,31 +109,19 @@ body {
 }
 
 #quoteroller{
+    margin-top: 10vh;
+    margin-left: auto;
+    margin-right: auto;
     z-index: 67;
     position: relative;
-    padding-left: 35%;
-    width: 100vw;
-    height: 100vh;
-    overflow: auto;
-    scroll-snap-type: y proximity;
-    scroll-behavior: smooth !important;
+    width: 30vw;
 }
 
 .quoteContainer {
-    height: 17.6vh;
+    height: 30vh;
     font-size: 2vmin;
     display: flex;
     flex-direction: row;
-    scroll-snap-align: center;
-    scroll-snap-stop: normal;
-}
-
-.quoteContainer:first-child {
-    margin-top: 50vh;
-}
-
-.quoteContainer:last-child {
-    margin-bottom: 50vh;
 }
 
 .quote {
@@ -109,39 +138,25 @@ body {
     position: fixed;
     width: inherit;
     height: fit-content;
-    bottom: -16em;
+    top: 83%;
     font-family: Calibri;
     white-space: pre;
     text-align: center;
-    z-index: 68;
+    z-index: 71;
     font-size: 1.5vmin;
 }
 
 #search {
     left: -5em;
-    top: -10.2em;
+    top: -10em;
     white-space: normal;
     position: relative;
     font-family: seagram;
     background-color: var(--background);
+    padding-top: 3%;
     padding-bottom: 10%;
-    padding-top: 0.75%;
     width: inherit;
     z-index: 70;
-}
-
-#searchInner {
-    position: relative;
-    line-height: 0.5em;
-    padding: 0.5%;
-    width: 15%;
-    border: none;
-    font-size: 1em;
-    left: 1em;
-    bottom: 0.3em;
-    background-color: inherit;
-    font-family: inherit;
-    color: inherit;
 }
 
 #searchBox {
@@ -149,7 +164,6 @@ body {
     top: -2.5em;
     position: relative;
     z-index: 71;
-    pointer-events: none;
 }
 
 #addQuote {
@@ -166,137 +180,13 @@ body {
 
 #confirm {
     position: relative;
-    top: 2em;
-    z-index: 1;
+    top: 1em;
 }
 
 #confirmBox {
     font-family: Calibri;
     white-space: pre;
     position: relative;
-    top: -1em;
+    top: -2em;
     text-align: center;
-    cursor: pointer;
-    border: none;
-    background-color: transparent;
-    color: inherit;
-    z-index: 2;
-    font-size: inherit;
-}
-
-#date, #sayer, #quoteToAdd{
-    font-size: inherit;
-    font-family: inherit;
-    color: inherit;
-    width: fit-content;
-    border: none;
-    background-color: var(--background);
-    text-align: center;
-}
-
-#quoteOfDayContainer {
-    top: 3%;
-    left: 5%;
-    position: fixed;
-    font-size: 2vmin;
-    white-space: pre;
-    text-align: start;
-}
-
-#quoteOfDay {
-    margin-left: 10%;
-}
-
-#mobileCoverer {
-    display: none;
-}
-
-#divider {
-    display: none;
-}
-
-@media only screen and (orientation: portrait) {
-    #quoteOfDayContainer {
-        left: 23vw;
-        font-size: 1.5rem;
-        top: 0rem;
-    }
-
-    #addQuote {
-        top: 18rem;
-        left: 10vw;
-        font-size: 1.5rem;
-    }
-
-    #quoteroller {
-        padding-top: 10rem;
-        scroll-padding-top: 80%;
-        padding-left: 4rem;
-        z-index: 66;
-        height: 75vh;
-    }
-
-    #scroll {
-        font-size: 0.8rem;
-    }
-
-    #bottomBar {
-        bottom: -13em;
-        left: 3em;
-        font-size: 1.2rem;
-    }
-
-    #mobileCoverer {
-        width: 100%;
-        height: 39em;
-        background-color: var(--background);
-        position: fixed;
-        top: 0em;
-        display: block;
-        z-index: 67;
-        pointer-events: none;
-    }
-
-    #quoteOfDayContainer {
-        z-index: 68;
-    }
-
-    .quoteContainer {
-        height: 10vh;
-    }
-
-    .quoteContainer:first-child {
-        margin-top: 70vh;
-    }
-    
-    .quoteContainer:last-child {
-        margin-bottom: 20vh;
-    }
-
-    #search {
-        bottom: -8.5em;
-        padding-bottom: 9%;
-    }
-
-    #searchBox {
-        top: -3.5em;
-    }
-
-    #searchInner {
-        left: 1em;
-        width: 40%;
-    }
-
-    #divider {
-        background-color: var(--green);
-        margin-left: auto;
-        margin-right: auto;
-        width: 40em;
-        margin-left: 4em;
-        height: 2px;
-        position: fixed;
-        display: block;
-        top: 16.5em;
-        z-index: 68;
-    }
 }

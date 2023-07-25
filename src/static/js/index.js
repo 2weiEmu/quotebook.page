@@ -5,8 +5,7 @@ window.onload = async function ()
     let context = canvas.getContext("2d");
     let quotes = document.querySelectorAll(".quote");
     // let quoteContainers = document.querySelectorAll(".quoteContainer");
-    let search = document.querySelector("#searchInner");
-    let container = document.querySelector("#quoteroller");
+    let search = document.querySelector("#search");
 
     context.font = window.getComputedStyle(scroll).fontSize.concat(" ").concat(window.getComputedStyle(scroll).fontFamily)
 
@@ -19,15 +18,11 @@ window.onload = async function ()
     let widthMargin = 10; // this is measured in tilde-widths
     let heightMargin = 2; // this is measured in pipe-heights
 
-    let shadowWizardMoneyGang = ["Consult the Enigmatic Knowledge...", "Peruse the Ancient Texts...", "Explore the Oracular Memoranda..."];
-    search.placeholder = shadowWizardMoneyGang[Math.floor(Math.random() * shadowWizardMoneyGang.length)];
+    let shadowWizardMoneyGang = ["Consult the Enigmatic Knowledge...", "Peruse the Ancient Texts...", "Explore the Oracular Memorandums..."];
+    search.textContent = shadowWizardMoneyGang[Math.floor(Math.random() * shadowWizardMoneyGang.length)];
 
     function quoteSize(quote) {
-        if (window.innerHeight <= window.innerWidth) {
-            quote.style.fontSize = String(Math.min(Math.max(3.5 - (0.08 * Math.abs(((quote.getBoundingClientRect().y / window.innerHeight * 100) - 41))), 2), 3)).concat("rem");
-        } else {
-            quote.style.fontSize = String(Math.min(Math.max(2.5 - (0.08 * Math.abs(((quote.getBoundingClientRect().y / window.innerHeight * 100) - 68))), 1), 2)).concat("rem");
-        }
+        quote.style.fontSize = String(Math.min(Math.max(3.5 - (0.06 * Math.abs(((quote.getBoundingClientRect().y / window.innerHeight * 100) - 47))), 2), 3)).concat("vmin");
     }
     quotes.forEach(quote => {
         quoteSize(quote);
@@ -69,8 +64,8 @@ window.onload = async function ()
     }
     calcScroll();
     window.onresize = calcScroll;
-    
-    container.onscroll = function () {
+
+    window.onscroll = function () {
         quotes.forEach(quote => {
             quoteSize(quote);
         });
