@@ -19,6 +19,7 @@ import (
 var db *sql.DB
 var sqlite3Conn sqlite3.SQLiteConn
 var pageSearchStatement *sql.Stmt
+var allPagesStatement *sql.Stmt
 var err error
 
 /*
@@ -189,7 +190,9 @@ func IndexPage(w http.ResponseWriter, req *http.Request) {
         searchAuthor = queryParams["author"][0]
     }
 
-    quotes, nextPageMarker, err := GetQuotesPrepared(pageSearchStatement, searchText, pageNumber, searchAuthor)
+    // quotes, nextPageMarker, err := GetQuotesPrepared(pageSearchStatement, searchText, pageNumber, searchAuthor)
+
+    quotes, nextPageMarker, err := GetQuotesPreparedAll(allPagesStatement)
 
     if queryParams.Has("search") {
         searchText = queryParams["search"][0]
@@ -253,8 +256,10 @@ db, err = sql.Open("sqlite3", "file:src/DATABASE?cache=shared")
 
     // Preparing Database Statement
     pageSearchStatement, err = db.Prepare(`SELECT * FROM quotes as q WHERE q.quote LIKE ? AND sayer LIKE ? ORDER BY date DESC LIMIT ?, ?`)
+    allPagesStatement, err = db.Prepare(`SELECT * FROM quotes`)
 
     defer pageSearchStatement.Close()
+    defer allPagesStatement.Close()
 
     if e := db.Ping(); e != nil {
         fmt.Println("DB Not Connected. Ping failed with error:", e)

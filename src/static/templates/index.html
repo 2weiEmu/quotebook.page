@@ -27,26 +27,12 @@
                 <div id="search">Consult the Enigmatic Knowledge...</div>
             </div>
             <div class="quoteContainer"></div>
-            <div class="quoteContainer">
-                <div class="quote">"Lorem ipsum dolor"</div>
-                <div class="author">- Some ancient guy</div>
-            </div>
-            <div class="quoteContainer">
-                <div class="quote">"sit amet, consectetur"</div>
-                <div class="author">- Some ancient guy</div>
-            </div>
-            <div class="quoteContainer">
-                <div class="quote">"adipiscing elit. Nulla"</div>
-                <div class="author">- Some ancient guy</div>
-            </div>
-            <div class="quoteContainer">
-                <div class="quote">"consequat mauris aliquet,"</div>
-                <div class="author">- Some ancient guy</div>
-            </div>
-            <div class="quoteContainer">
-                <div class="quote">"aliquet odio quis,"</div>
-                <div class="author">- Some ancient guy</div>
-            </div>
+                {{ range .Quotes }}
+                    <div class="quoteContainer">
+                        <div class="quote">"{{ .Quote }}"</div>
+                        <div class="author">{{ .Sayer }}</div>
+                    </div>
+                {{ end }}
             <div class="quoteContainer"></div>
         </div>
         <div id="addQuote">
